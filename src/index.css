@@ -146,6 +146,28 @@ a {
   overflow: hidden;
 }
 
+/* Mobile: hero dominates first screen (~50–60% viewport), features start below */
+@media (max-width: 639px) {
+  .hero-section {
+    height: 55vh;
+    height: 55dvh;
+    min-height: 20rem;
+  }
+
+  .hero-stadium-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .home-lower {
+    margin-top: 0;
+  }
+}
+
 .hero-stadium-img {
   display: block;
   width: 100%;
@@ -155,11 +177,11 @@ a {
   object-position: center top;
 }
 
-/* Pull features + support up over the pitch */
+/* Desktop: pull features + support up over the pitch */
 .home-lower {
   position: relative;
   z-index: 3;
-  margin-top: clamp(-2rem, -6vw, -8rem);
+  margin-top: 0;
 }
 
 @media (min-width: 640px) {
