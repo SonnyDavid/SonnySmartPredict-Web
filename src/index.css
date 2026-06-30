@@ -149,15 +149,15 @@ a {
 /* Mobile: tall hero — fills most of the first screen, image fully visible */
 @media (max-width: 639px) {
   .hero-section {
-    min-height: 85vh;
-    min-height: 85dvh;
+    min-height: 92vh;
+    min-height: 92dvh;
   }
 
   .hero-stadium-img {
     display: block;
     width: 100%;
-    height: 85vh;
-    height: 85dvh;
+    height: 92vh;
+    height: 92dvh;
     max-width: none;
     object-fit: cover;
     object-position: center top;
