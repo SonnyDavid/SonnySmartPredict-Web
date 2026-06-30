@@ -33,7 +33,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-img,
+img:not(.hero-stadium-img),
 svg,
 video {
   max-width: 100%;
@@ -146,21 +146,25 @@ a {
   overflow: hidden;
 }
 
-/* Mobile: hero dominates first screen (~50–60% viewport), features start below */
+/* Mobile: tall hero — fills most of the first screen, image fully visible */
 @media (max-width: 639px) {
   .hero-section {
-    height: 55vh;
-    height: 55dvh;
-    min-height: 20rem;
+    min-height: 85vh;
+    min-height: 85dvh;
   }
 
   .hero-stadium-img {
-    position: absolute;
-    inset: 0;
+    display: block;
     width: 100%;
-    height: 100%;
+    height: 85vh;
+    height: 85dvh;
+    max-width: none;
     object-fit: cover;
     object-position: center top;
+  }
+
+  .hero-content {
+    transform: translateY(0);
   }
 
   .home-lower {
@@ -173,7 +177,6 @@ a {
   width: 100%;
   height: auto;
   max-width: none;
-  object-fit: cover;
   object-position: center top;
 }
 
