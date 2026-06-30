@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { BRAND_GREEN, SITE } from "../../config/site";
 import Logo from "./Logo";
@@ -52,7 +52,7 @@ function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void 
     <Link
       to={item.to}
       onClick={onNavigate}
-      className={`relative flex h-11 items-center px-3 text-[14px] font-medium tracking-wide transition-colors duration-300 sm:px-4 lg:text-[15px] ${
+      className={`relative flex min-h-11 items-center px-3 py-2 text-[13px] font-medium tracking-wide transition-colors duration-300 sm:px-4 sm:text-[14px] lg:text-[15px] ${
         active ? "text-[#71CC02]" : "text-white/75 hover:text-white"
       }`}
     >
@@ -73,20 +73,25 @@ function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void 
 export default function Header() {
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   return (
     <header className="site-header fixed inset-x-0 top-0 z-50">
-      <div className="site-header__bar mx-auto flex h-[64px] max-w-[1440px] items-center px-5 sm:px-8 lg:px-10">
-        {/* Logo */}
-        <div className="flex flex-1 items-center">
+      <div className="site-header__bar mx-auto flex max-w-[1440px] items-center px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16">
+        <div className="flex min-w-0 flex-1 items-center">
           <Logo />
         </div>
 
-        {/* Desktop nav — centered */}
         <nav
           className="hidden items-center justify-center md:flex"
           aria-label="Main navigation"
         >
-          <ul className="flex items-center gap-1 lg:gap-2">
+          <ul className="flex items-center gap-0.5 lg:gap-2">
             {NAV.map((item) => (
               <li key={item.to}>
                 <NavLink item={item} />
@@ -95,8 +100,7 @@ export default function Header() {
           </ul>
         </nav>
 
-        {/* CTA + mobile toggle */}
-        <div className="flex flex-1 items-center justify-end gap-3">
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-3">
           <a
             href={SITE.playStoreUrl}
             target="_blank"
@@ -109,7 +113,7 @@ export default function Header() {
 
           <button
             type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-md border border-white/10 bg-black/40 text-white transition-colors duration-300 hover:border-white/20 hover:bg-black/60 md:hidden"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-black/40 text-white transition-colors duration-300 hover:border-white/20 hover:bg-black/60 sm:h-10 sm:w-10 md:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
@@ -136,14 +140,16 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile nav */}
       <div
         id="mobile-nav"
-        className={`overflow-hidden border-t border-white/[0.06] bg-black/90 backdrop-blur-xl transition-all duration-300 md:hidden ${
-          open ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+        className={`overflow-hidden border-t border-white/[0.06] bg-black/95 backdrop-blur-xl transition-[max-height,opacity] duration-300 md:hidden ${
+          open ? "max-h-[28rem] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <nav className="mx-auto max-w-[1440px] px-5 py-3" aria-label="Mobile navigation">
+        <nav
+          className="mx-auto max-w-[1440px] px-4 py-3 sm:px-6"
+          aria-label="Mobile navigation"
+        >
           <ul className="flex flex-col">
             {NAV.map((item) => (
               <li key={item.to}>
