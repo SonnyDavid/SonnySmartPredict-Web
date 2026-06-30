@@ -146,13 +146,13 @@ a {
   overflow: hidden;
 }
 
-/* Mobile: hero extends downward below buttons — stadium visible before Daily Matches */
+/* Mobile: full-screen hero + small stadium strip below buttons before Daily Matches */
 @media (max-width: 639px) {
   .hero-section {
     z-index: 1;
-    height: calc(100dvh + 18dvh);
-    min-height: calc(100vh + 18vh);
-    min-height: calc(100dvh + 18dvh);
+    height: calc(100dvh + 12dvh);
+    min-height: calc(100vh + 12vh);
+    min-height: calc(100dvh + 12dvh);
   }
 
   .hero-stadium-img {
@@ -166,11 +166,14 @@ a {
     object-position: top center;
   }
 
+  /* Overlay covers the full first screen — hero is NOT shrunk to half */
   .hero-content {
     top: 0;
     right: 0;
-    bottom: 18dvh;
     left: 0;
+    bottom: auto;
+    height: 100dvh;
+    height: 100dvh;
     justify-content: flex-end;
     padding-bottom: 1.5625rem;
     transform: none;
