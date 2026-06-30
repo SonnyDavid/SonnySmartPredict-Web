@@ -164,6 +164,8 @@ a {
   }
 
   .hero-content {
+    justify-content: flex-end;
+    padding-bottom: 1.5625rem;
     transform: translateY(0);
   }
 
