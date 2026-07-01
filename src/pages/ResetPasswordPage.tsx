@@ -2,58 +2,10 @@ import { type FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import HeroBackground from "../components/common/HeroBackground";
 import Logo from "../components/layout/Logo";
+import { waitForRecoveryReady } from "../lib/recoverySession";
 import { isSupabaseConfigured, supabase } from "../lib/supabase";
 
 type PageState = "loading" | "ready" | "success" | "error";
-
-async function establishRecoverySession(): Promise<string | null> {
-  if (!supabase) {
-    return "Supabase is not configured. Please contact support.";
-  }
-
-  const query = new URLSearchParams(window.location.search);
-  const tokenHash = query.get("token_hash");
-  const type = query.get("type");
-
-  if (tokenHash && type === "recovery") {
-    const { error } = await supabase.auth.verifyOtp({
-      token_hash: tokenHash,
-      type: "recovery",
-    });
-    if (error) return error.message;
-    return null;
-  }
-
-  const code = query.get("code");
-  if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) return error.message;
-    return null;
-  }
-
-  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-  const accessToken = hashParams.get("access_token");
-  const refreshToken = hashParams.get("refresh_token");
-  const hashType = hashParams.get("type");
-
-  if (accessToken && refreshToken && hashType === "recovery") {
-    const { error } = await supabase.auth.setSession({
-      access_token: accessToken,
-      refresh_token: refreshToken,
-    });
-    if (error) return error.message;
-    window.history.replaceState({}, document.title, window.location.pathname);
-    return null;
-  }
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (session) return null;
-
-  return "This reset link is invalid or has expired. Please request a new password reset email from the app.";
-}
 
 export default function ResetPasswordPage() {
   const [pageState, setPageState] = useState<PageState>("loading");
@@ -63,7 +15,7 @@ export default function ResetPasswordPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured || !supabase) {
       setErrorMessage("Supabase is not configured. Please contact support.");
       setPageState("error");
       return;
@@ -71,28 +23,19 @@ export default function ResetPasswordPage() {
 
     let active = true;
 
-    const { data: authListener } = supabase!.auth.onAuthStateChange((event) => {
-      if (!active) return;
-      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") {
-        setPageState("ready");
-        setErrorMessage("");
-      }
-    });
-
-    void establishRecoverySession().then((error) => {
+    void waitForRecoveryReady(supabase).then((error) => {
       if (!active) return;
       if (error) {
         setErrorMessage(error);
         setPageState("error");
         return;
       }
-      setPageState("ready");
       setErrorMessage("");
+      setPageState("ready");
     });
 
     return () => {
       active = false;
-      authListener.subscription.unsubscribe();
     };
   }, []);
 
@@ -115,6 +58,18 @@ export default function ResetPasswordPage() {
       return;
     }
 
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      setErrorMessage(
+        "Your reset session has expired. Please request a new password reset email from the app."
+      );
+      setPageState("error");
+      return;
+    }
+
     setSubmitting(true);
 
     const { error } = await supabase.auth.updateUser({ password });
@@ -129,6 +84,8 @@ export default function ResetPasswordPage() {
     await supabase.auth.signOut();
     setPageState("success");
   }
+
+  const formDisabled = pageState === "loading" || pageState === "error";
 
   return (
     <main className="bg-black">
@@ -159,55 +116,63 @@ export default function ResetPasswordPage() {
                   <p className="reset-password-status" role="status">
                     Verifying reset link…
                   </p>
-                ) : pageState === "error" ? (
+                ) : null}
+
+                {pageState === "error" ? (
                   <p className="reset-password-error" role="alert">
                     {errorMessage}
                   </p>
-                ) : (
-                  <form className="reset-password-form" onSubmit={handleSubmit} noValidate>
-                    <label className="reset-password-field">
-                      <span className="reset-password-label">New Password</span>
-                      <input
-                        type="password"
-                        name="password"
-                        autoComplete="new-password"
-                        required
-                        minLength={8}
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        className="reset-password-input"
-                      />
-                    </label>
+                ) : null}
 
-                    <label className="reset-password-field">
-                      <span className="reset-password-label">Confirm New Password</span>
-                      <input
-                        type="password"
-                        name="confirmPassword"
-                        autoComplete="new-password"
-                        required
-                        minLength={8}
-                        value={confirmPassword}
-                        onChange={(event) => setConfirmPassword(event.target.value)}
-                        className="reset-password-input"
-                      />
-                    </label>
+                <form
+                  className="reset-password-form"
+                  onSubmit={handleSubmit}
+                  noValidate
+                >
+                  <label className="reset-password-field">
+                    <span className="reset-password-label">New Password</span>
+                    <input
+                      type="password"
+                      name="password"
+                      autoComplete="new-password"
+                      required
+                      minLength={8}
+                      disabled={formDisabled}
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      className="reset-password-input"
+                    />
+                  </label>
 
-                    {errorMessage && pageState === "ready" ? (
-                      <p className="reset-password-error" role="alert">
-                        {errorMessage}
-                      </p>
-                    ) : null}
+                  <label className="reset-password-field">
+                    <span className="reset-password-label">Confirm New Password</span>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      autoComplete="new-password"
+                      required
+                      minLength={8}
+                      disabled={formDisabled}
+                      value={confirmPassword}
+                      onChange={(event) => setConfirmPassword(event.target.value)}
+                      className="reset-password-input"
+                    />
+                  </label>
 
-                    <button
-                      type="submit"
-                      className="reset-password-submit"
-                      disabled={submitting}
-                    >
-                      {submitting ? "Updating…" : "Update Password"}
-                    </button>
-                  </form>
-                )}
+                  {errorMessage && pageState === "ready" ? (
+                    <p className="reset-password-error" role="alert">
+                      {errorMessage}
+                    </p>
+                  ) : null}
+
+                  <button
+                    type="submit"
+                    className="reset-password-submit"
+                    disabled={formDisabled || submitting}
+                  >
+                    {submitting ? "Updating…" : "Update Password"}
+                  </button>
+                </form>
               </>
             )}
           </div>

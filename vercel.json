@@ -1,0 +1,11 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "sonnysmartprediction.com" }],
+      "destination": "https://www.sonnysmartprediction.com/:path*",
+      "permanent": true
+    }
+  ],
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
