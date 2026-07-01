@@ -146,27 +146,39 @@ a {
   overflow: hidden;
 }
 
-/* Mobile: natural image height — full stadium visible, overlay on top */
+/* Mobile: simple stacked grid — image + overlay, always visible */
 @media (max-width: 639px) {
   .hero-section {
-    position: relative;
-    display: block;
-    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 85vh;
+    min-height: 85svh;
   }
 
   .hero-stadium-img {
+    grid-row: 1;
+    grid-column: 1;
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    min-height: 85vh;
+    min-height: 85svh;
     max-width: none;
+    object-fit: cover;
+    object-position: top center;
   }
 
   .hero-content {
-    position: absolute;
-    inset: 0;
+    position: relative;
+    grid-row: 1;
+    grid-column: 1;
     z-index: 2;
-    justify-content: center;
-    padding-bottom: 1rem;
+    align-self: end;
+    width: 100%;
+    height: auto;
+    inset: auto;
+    justify-content: flex-end;
+    padding-bottom: 1.5rem;
     transform: none;
   }
 
@@ -329,4 +341,195 @@ a {
 .legal-content a {
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+/* Reset password page */
+.reset-password-hero {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.reset-password-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--header-height) + 1.25rem) var(--page-gutter) 2rem;
+}
+
+.reset-password-card {
+  width: 100%;
+  max-width: 26rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 1.5rem;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+}
+
+@media (min-width: 640px) {
+  .reset-password-card {
+    padding: 2rem;
+  }
+}
+
+.reset-password-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.reset-password-title {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(1.375rem, 4vw, 1.75rem);
+  font-weight: 700;
+  color: #fff;
+}
+
+.reset-password-subtitle {
+  margin: 0.5rem 0 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.reset-password-status {
+  margin: 1.5rem 0 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.reset-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.reset-password-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.reset-password-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.reset-password-input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 0.75rem 0.875rem;
+  font-size: 1rem;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reset-password-input:focus {
+  border-color: rgba(113, 204, 2, 0.65);
+  box-shadow: 0 0 0 3px rgba(113, 204, 2, 0.15);
+}
+
+.reset-password-submit {
+  width: 100%;
+  margin-top: 0.25rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--brand-green);
+  padding: 0.875rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #000;
+  cursor: pointer;
+  transition: opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reset-password-submit:hover:not(:disabled) {
+  box-shadow: 0 0 24px rgba(113, 204, 2, 0.35);
+}
+
+.reset-password-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.reset-password-error {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #ff6b6b;
+}
+
+.reset-password-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.reset-password-success__message {
+  margin: 0;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--brand-green);
+}
+
+.reset-password-home-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border: 1px solid rgba(113, 204, 2, 0.6);
+  border-radius: 0.5rem;
+  background: rgba(113, 204, 2, 0.08);
+  padding: 0.875rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--brand-green);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.reset-password-home-btn:hover {
+  border-color: var(--brand-green);
+  background: rgba(113, 204, 2, 0.15);
+  box-shadow: 0 0 20px rgba(113, 204, 2, 0.2);
+}
+
+@media (max-width: 639px) {
+  .reset-password-hero {
+    min-height: 85vh;
+    min-height: 85svh;
+  }
+
+  .reset-password-hero.hero-section {
+    display: block;
+  }
+
+  .reset-password-hero .hero-stadium-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 85vh;
+    min-height: 85svh;
+    object-fit: cover;
+    object-position: top center;
+  }
 }
